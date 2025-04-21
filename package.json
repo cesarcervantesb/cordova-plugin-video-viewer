@@ -1,0 +1,25 @@
+{
+  "name": "com.ccervantesb.videoviewer",
+  "version": "1.0.0",
+  "description": "This plugin allows to show a video from a file path or URL on new window.",
+  "cordova": {
+    "id": "com.ccervantesb.videoviewer",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cesarcervantesb/cordova-plugin-video-viewer.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "ccervantesb",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cesarcervantesb/cordova-plugin-video-viewer/issues"
+  },
+  "homepage": "https://github.com/cesarcervantesb/cordova-plugin-video-viewer#readme"
+}
