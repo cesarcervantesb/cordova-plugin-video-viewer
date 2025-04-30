@@ -1,9 +1,9 @@
 {
-  "name": "com.ccervantesb.videoviewer",
+  "name": "cordova-plugin-video-viewer",
   "version": "1.0.0",
   "description": "This plugin allows to show a video from a file path or URL on new window.",
   "cordova": {
-    "id": "com.ccervantesb.videoviewer",
+    "id": "cordova-plugin-video-viewer",
     "platforms": [
       "android"
     ]
