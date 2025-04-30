@@ -30,4 +30,12 @@
 		<source-file src="src/android/layout/activity_video.xml" target-dir="res/layout" />
 
 	</platform>
+    <platform name="ios">
+		<config-file parent="/*" target="config.xml">
+			<feature name="VideoViewer">
+				<param name="ios-package" value="VideoViewer" />
+			</feature>
+		</config-file>
+		<source-file src="src/ios/VideoViewer.m" />
+	</platform>
 </plugin>
