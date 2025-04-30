@@ -5,7 +5,8 @@
   "cordova": {
     "id": "com.ccervantesb.videoviewer",
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ]
   },
   "repository": {
