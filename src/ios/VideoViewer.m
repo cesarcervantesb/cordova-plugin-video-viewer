@@ -88,7 +88,7 @@ int INT_ERR_INVALID_SRC = 5;
 
 - (bool)isValidSrc:(NSString*)src
 {
-    NSArray* startURI = @[@"file"]//, @"http", @"https"];
+    NSArray* startURI = @[@"file"];//, @"http", @"https"];
     NSString* start = [src componentsSeparatedByString:(@"://")][0];
     return [startURI containsObject:(start)];
 }
