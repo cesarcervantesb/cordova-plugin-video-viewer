@@ -17,6 +17,15 @@
 
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
             <activity android:name="com.ccervantesb.videoviewer.VideoActivity" android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
+			<provider
+              android:name="com.ccervantesb.videoviewer.FileProvider"
+              android:authorities="${applicationId}.cordova.plugin.video.viewer.provider"
+              android:exported="false"
+              android:grantUriPermissions="true" >
+              <meta-data
+                  android:name="android.support.FILE_PROVIDER_PATHS"
+                  android:resource="@xml/video_viewer_provider_paths.xml"/>
+          	</provider>
         </config-file>
 
 		<config-file parent="/manifest" target="AndroidManifest.xml">
@@ -27,7 +36,8 @@
 
 		<source-file src="src/android/VideoViewer.java" target-dir="src/com/ccervantesb/videoviewer" />
 		<source-file src="src/android/VideoActivity.java" target-dir="src/com/ccervantesb/videoviewer" />
-		<source-file src="src/android/layout/activity_video.xml" target-dir="res/layout" />
+		<source-file src="src/android/FileProvider.java" target-dir="src/com/ccervantesb/videoviewer" />
+		<source-file src="src/android/xml/activity_video.xml" target-dir="res/layout" />
 
 	</platform>
     <platform name="ios">

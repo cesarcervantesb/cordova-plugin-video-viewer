@@ -1,10 +1,13 @@
 package com.ccervantesb.videoviewer;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -14,16 +17,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.annotation.RequiresApi;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+
 public class VideoActivity extends Activity {
 
     private static final String TAG = "VideoActivity";
     private static final String STR_ERR_LOAD_VIDEO = "An error occurred while loading video source.";
+    private static final String STR_ERR_SHARE_VIDEO = "An error occurred while sharing video";
     private VideoView videoView;
     private TextView tvTitle;
     private ImageButton btnClose, btnShare;
     private ProgressBar progressBar;
     private String src, strTitle;
     private boolean showShareButton;
+    private MediaController mediaController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +59,7 @@ public class VideoActivity extends Activity {
         try {
             src = getIntent().getStringExtra("src");
             strTitle = getIntent().getStringExtra("title");
-            showShareButton = getIntent().getBooleanExtra("share", false);
+            showShareButton = getIntent().getBooleanExtra("share", true);
         }
         catch (Exception e) {
             Log.d(TAG, e.getMessage());
@@ -71,20 +83,34 @@ public class VideoActivity extends Activity {
         });
 
         btnShare.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.Q)
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick share button");
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 if (src.startsWith("http") || src.startsWith("https")) {
-                    shareIntent.setType("text/*");
+                    // Share video link
+                    shareIntent.setType("text/plain");
                     shareIntent.putExtra(Intent.EXTRA_TEXT, src);
-                }
-                else {
+                } else {
+                    // Share local video
                     shareIntent.setType("video/*");
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, src);
+                    try {
+                        File localVideo = copyVideoFile(src);
+                        Uri videoUri = FileProvider.getUriForFile(
+                            VideoActivity.this,
+                            getApplicationContext().getPackageName() + ".cordova.plugin.video.viewer.provider",
+                            localVideo
+                        );
+                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, videoUri);
+                        startActivity(Intent.createChooser(shareIntent, "Share video"));
+                    } catch (Exception e) {
+                        Log.e(TAG,  STR_ERR_SHARE_VIDEO + ": " + e.getMessage());
+                        Toast.makeText(VideoActivity.this, STR_ERR_SHARE_VIDEO, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                 }
-
-                startActivity(Intent.createChooser(shareIntent, "Share"));
             }
         });
 
@@ -97,6 +123,7 @@ public class VideoActivity extends Activity {
                 btnShare.setVisibility(showShareButton ? View.VISIBLE : View.INVISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
                 mediaPlayer.start();
+                mediaController.show();
             }
         });
         
@@ -112,10 +139,34 @@ public class VideoActivity extends Activity {
         });
 
         // Set default media controller
-        videoView.setMediaController(new MediaController(this));
+        mediaController = new MediaController(this);
+        videoView.setMediaController(mediaController);
 
         // load video
         Log.d(TAG, "setVideoURI: " + src);
         videoView.setVideoURI(Uri.parse(src));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private File copyVideoFile(String src) {
+        File video = null;
+        try {
+            String fileName = src.split("/")[src.split("/").length - 1];
+            File cacheDir = new File(getCacheDir(), "cordova.plugin.video.viewer");
+            if(!cacheDir.exists()) {
+                cacheDir.mkdir();
+            }
+            ContentResolver contentResolver = getContentResolver();
+            InputStream inputStreamVideo = contentResolver.openInputStream(Uri.parse(src));
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            FileUtils.copy(inputStreamVideo, byteArrayOutputStream);
+            video = new File(cacheDir, fileName);
+            FileOutputStream fileOutputStream = new FileOutputStream(video);
+            fileOutputStream.write(byteArrayOutputStream.toByteArray());
+            fileOutputStream.close();
+        } catch (Exception e) {
+            Log.d(TAG, "An error occurred while copy video: " + e.getMessage());
+        }
+        return video;
     }
 }
