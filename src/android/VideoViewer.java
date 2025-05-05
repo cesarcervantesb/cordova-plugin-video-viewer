@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -39,7 +40,7 @@ public class VideoViewer extends CordovaPlugin {
     };
     private String src;             // video src
     private String title;           // custom video title
-    private boolean share = false;  // visibility share button
+    private boolean share = true;   // visibility share button
 
 
     @Override
@@ -102,19 +103,16 @@ public class VideoViewer extends CordovaPlugin {
     }
 
     private void requestPermissions(int requestCode, String[] permissions) {
-        cordova.requestPermissions(this, requestCode, permissions);
+        PermissionHelper.requestPermissions(this, requestCode, permissions);
     }
 
     private String[] getPermissions() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return new String[] {
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-            };
+        ArrayList<String> permissions = new ArrayList<>();
+        if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
-        else {
-            return new String[] {};
-        }
+        return permissions.toArray(new String[0]);
     }
 
     private boolean isValidSrc(String src) {
