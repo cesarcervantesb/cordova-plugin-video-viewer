@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
@@ -108,7 +109,6 @@ public class VideoActivity extends Activity {
                     } catch (Exception e) {
                         Log.e(TAG,  STR_ERR_SHARE_VIDEO + ": " + e.getMessage());
                         Toast.makeText(VideoActivity.this, STR_ERR_SHARE_VIDEO, Toast.LENGTH_SHORT).show();
-                        return;
                     }
                 }
             }
@@ -152,6 +152,9 @@ public class VideoActivity extends Activity {
         File video = null;
         try {
             String fileName = src.split("/")[src.split("/").length - 1];
+            if (src.startsWith("content://")) {
+                fileName += getFileExtension(src);
+            }
             File cacheDir = new File(getCacheDir(), "cordova.plugin.video.viewer");
             if(!cacheDir.exists()) {
                 cacheDir.mkdir();
@@ -168,5 +171,10 @@ public class VideoActivity extends Activity {
             Log.d(TAG, "An error occurred while copy video: " + e.getMessage());
         }
         return video;
+    }
+
+    private String getFileExtension (String src) {
+        String type = getContentResolver().getType(Uri.parse(src));
+        return "." + MimeTypeMap.getSingleton().getExtensionFromMimeType(type);
     }
 }

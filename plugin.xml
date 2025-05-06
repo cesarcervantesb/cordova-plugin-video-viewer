@@ -24,7 +24,7 @@
               android:grantUriPermissions="true" >
               <meta-data
                   android:name="android.support.FILE_PROVIDER_PATHS"
-                  android:resource="@xml/video_viewer_provider_paths.xml"/>
+                  android:resource="@xml/video_viewer_provider_paths"/>
           	</provider>
         </config-file>
 
@@ -38,6 +38,7 @@
 		<source-file src="src/android/VideoActivity.java" target-dir="src/com/ccervantesb/videoviewer" />
 		<source-file src="src/android/FileProvider.java" target-dir="src/com/ccervantesb/videoviewer" />
 		<source-file src="src/android/xml/activity_video.xml" target-dir="res/layout" />
+		<source-file src="src/android/xml/video_viewer_provider_paths.xml" target-dir="res/xml" />
 
 	</platform>
     <platform name="ios">
